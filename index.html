@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>vox</title>
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<!-- ================= AUTH SCREEN ================= -->
+<section id="screen-auth" class="screen active">
+  <div class="auth-card">
+    <img src="assets/logo-mark.png" alt="vox" class="logo-mark" />
+    <div class="wordmark">vox</div>
+    <p class="tagline">a quiet line, kept open.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Log in</button>
+      <button class="auth-tab" data-tab="signup">Sign up</button>
+    </div>
+
+    <form id="form-login" class="auth-form active">
+      <label>Email
+        <input type="email" id="login-email" required autocomplete="email" />
+      </label>
+      <label>Password
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </label>
+      <button type="submit" class="btn-primary">Enter</button>
+      <p class="auth-error" id="login-error"></p>
+    </form>
+
+    <form id="form-signup" class="auth-form">
+      <label>Display name
+        <input type="text" id="signup-name" required maxlength="24" />
+      </label>
+      <label>Email
+        <input type="email" id="signup-email" required autocomplete="email" />
+      </label>
+      <label>Password
+        <input type="password" id="signup-password" required minlength="6" autocomplete="new-password" />
+      </label>
+      <button type="submit" class="btn-primary">Create account</button>
+      <p class="auth-error" id="signup-error"></p>
+    </form>
+  </div>
+</section>
+
+<!-- ================= MAIN APP ================= -->
+<section id="screen-app" class="screen">
+  <div class="app-shell">
+
+    <!-- Sidebar: chat list (slides in as a drawer) -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo-mark.png" alt="" class="logo-mark logo-mark-sm" />
+        <span class="brand-word">vox</span>
+      </div>
+      <div class="sidebar-header">
+        <div class="me">
+          <span class="dot dot-online"></span>
+          <span id="me-name">—</span>
+          <span id="me-badge"></span>
+        </div>
+        <div class="header-actions">
+          <button id="btn-mod-menu" class="icon-btn" title="Mod menu" hidden>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V5l8-3z"/></svg>
+          </button>
+          <button id="btn-school-mode" class="icon-btn" title="School mode: off">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.1 2.7 3 6 3s6-1.9 6-3v-4.5"/></svg>
+          </button>
+          <button id="btn-logout" class="icon-btn" title="Log out">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <button id="btn-new-chat" class="btn-ghost">+ New conversation</button>
+      <button id="btn-new-group" class="btn-ghost">+ New group</button>
+
+      <div id="chat-list" class="chat-list">
+        <!-- populated by js -->
+      </div>
+    </aside>
+    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+
+    <!-- Main: active chat -->
+    <main class="chat-pane">
+      <button id="btn-menu" class="icon-btn btn-menu btn-menu-floating" title="Menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+
+      <div class="notif-wrap notif-wrap-floating">
+        <button id="btn-notifications" class="icon-btn" title="Notifications">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span id="notif-dot" class="notif-dot" hidden></span>
+        </button>
+        <div id="notif-panel" class="attach-menu notif-panel" hidden>
+          <div class="notif-panel-header">
+            <span>Notifications</span>
+            <button id="btn-notif-clear-all" class="btn-ghost" style="padding:4px 10px;font-size:11px;">Clear all</button>
+          </div>
+          <div id="notif-list" class="notif-list"></div>
+        </div>
+      </div>
+
+      <div id="chat-empty" class="chat-empty">
+        <div id="new-chat-panel" class="new-chat-panel" hidden>
+          <h3>Start a conversation</h3>
+          <p class="panel-sub">Enter your friend's display name or email.</p>
+          <div class="panel-row">
+            <input type="text" id="new-chat-name" placeholder="Display name or email" />
+            <button id="btn-confirm-new-chat" class="btn-primary">Start</button>
+          </div>
+          <p class="auth-error" id="new-chat-error"></p>
+          <div id="new-chat-matches" class="new-chat-matches"></div>
+          <div id="new-chat-suggestions" class="new-chat-matches"></div>
+          <button id="btn-cancel-new-chat" class="btn-ghost btn-cancel-new-chat">Cancel</button>
+        </div>
+
+        <div id="new-group-panel" class="new-chat-panel" hidden>
+          <h3>New group</h3>
+          <p class="panel-sub">Add friends by display name, then create the group.</p>
+          <div class="panel-row">
+            <input type="text" id="new-group-name" placeholder="Group name" />
+          </div>
+          <div class="panel-row">
+            <input type="text" id="new-group-member-name" placeholder="Friend's display name or email" />
+            <button id="btn-add-group-member" class="btn-primary">Add</button>
+          </div>
+          <p class="auth-error" id="new-group-error"></p>
+          <div id="new-group-matches" class="new-chat-matches"></div>
+          <div id="new-group-members" class="new-chat-matches"></div>
+          <div id="new-group-suggestions" class="new-chat-matches"></div>
+          <div class="panel-row">
+            <button id="btn-create-group" class="btn-primary">Create group</button>
+          </div>
+          <button id="btn-cancel-new-group" class="btn-ghost btn-cancel-new-chat">Cancel</button>
+        </div>
+      </div>
+
+      <div id="chat-active" class="chat-active" hidden>
+        <header class="chat-header">
+          <div class="chat-header-left">
+            <div class="peer-info">
+              <span class="dot" id="peer-status"></span>
+              <span id="peer-name">—</span>
+              <span id="peer-badge"></span>
+            </div>
+          </div>
+          <div class="chat-header-right">
+            <button id="btn-call" class="icon-btn icon-btn-call" title="Audio call">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </button>
+            <button id="btn-video-call" class="icon-btn icon-btn-call" title="Video call">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <div id="messages" class="messages"></div>
+        <div id="typing-indicator" class="typing-indicator" hidden></div>
+
+        <div id="emoji-picker" class="emoji-picker" hidden></div>
+        <div id="reaction-picker" class="emoji-picker reaction-picker" hidden></div>
+
+        <form id="form-message" class="message-form">
+          <div class="attach-wrap">
+            <button type="button" id="btn-attach" class="icon-btn" title="Add">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <div id="attach-menu" class="attach-menu" hidden>
+              <button type="button" id="btn-attach-emoji" class="attach-menu-item">😀 Emoji</button>
+              <button type="button" id="btn-attach-media" class="attach-menu-item">🖼️ Image / GIF / Video</button>
+              <button type="button" id="btn-attach-game" class="attach-menu-item">🎮 Play Tic-Tac-Toe</button>
+              <button type="button" id="btn-game-hexagone" class="attach-menu-item">🔷 Hex-a-Gone</button>
+              <button type="button" id="btn-game-truthordare" class="attach-menu-item">🎲 Truth or Dare</button>
+            </div>
+          </div>
+          <input type="file" id="media-input" accept="image/*,video/*" hidden />
+          <input type="text" id="message-input" placeholder="Message" autocomplete="off" />
+          <button type="submit" class="icon-btn" title="Send">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
+</section>
+
+
+<!-- ================= INCOMING CALL ================= -->
+<div id="screen-incoming" class="screen call-screen" hidden>
+  <div class="call-panel">
+    <div class="call-body">
+      <div class="ripple"><span></span><span></span><span></span></div>
+      <div class="call-avatar" id="incoming-initial">–</div>
+      <div class="call-name" id="incoming-name">—</div>
+      <div class="call-status">incoming call</div>
+    </div>
+    <div class="call-actions">
+      <button id="btn-decline" class="call-btn call-btn-decline" title="Decline">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <button id="btn-accept" class="call-btn call-btn-accept" title="Accept">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= OUTGOING / ACTIVE CALL ================= -->
+<div id="screen-call" class="screen call-screen" hidden>
+  <div class="call-panel">
+    <video id="remote-video" class="remote-video no-video" autoplay playsinline></video>
+    <video id="local-video" class="local-video no-video" autoplay playsinline muted></video>
+    <div class="call-body">
+      <div class="ripple" id="call-ripple"><span></span><span></span><span></span></div>
+      <div class="call-avatar" id="call-initial">–</div>
+      <div class="call-name" id="call-peer-name">—</div>
+      <div class="call-status" id="call-status">calling…</div>
+      <div class="call-timer" id="call-timer" hidden>00:00</div>
+      <div class="call-privacy-notice" id="call-privacy-notice" hidden>🔒 Screen paused for privacy</div>
+    </div>
+    <div class="call-actions call-actions-active">
+      <button id="btn-mute" class="call-btn call-btn-secondary" title="Mute mic">
+        <svg id="icon-mute" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4M8 22h8"/>
+          <path class="icon-slash" d="M3 3l18 18"/>
+        </svg>
+      </button>
+      <button id="btn-camera" class="call-btn call-btn-secondary" title="Turn camera off">
+        <svg id="icon-camera" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/>
+          <path class="icon-slash" d="M2 2l20 20"/>
+        </svg>
+      </button>
+      <button id="btn-screenshare" class="call-btn call-btn-secondary" title="Share screen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+      </button>
+      <button id="btn-hold" class="call-btn call-btn-secondary" title="Hold">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      </button>
+      <button id="btn-hangup" class="call-btn call-btn-decline" title="End call">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="transform: rotate(135deg)">
+          <path d="M12 21C7 21 2.5 16.9 2.1 12.3c-.05-.6.3-1.15.85-1.4l3.3-1.5c.5-.23 1.1-.1 1.45.32l1.5 1.8c1.5-.7 2.7-1.9 3.4-3.4l-1.8-1.5c-.42-.35-.55-.95-.32-1.45l1.5-3.3c.25-.55.8-.9 1.4-.85C16.9 1.5 21 6 21 11c0 .3-.02.6-.05.9-.1 1-1 1.6-1.95 1.35l-2.9-.8c-.5-.14-1.05.05-1.35.48l-.9 1.3c-1.3-.6-2.4-1.7-3-3l1.3-.9c.43-.3.62-.85.48-1.35l-.8-2.9C11.6 5.02 12.2 4.1 13.2 4c.3-.03.6-.05.9-.05"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MOD MENU ================= -->
+<div id="screen-mod" class="screen mod-screen" hidden>
+  <div class="mod-card">
+    <header class="mod-header">
+      <h2>Mod menu</h2>
+      <button id="btn-close-mod" class="icon-btn" title="Close">✕</button>
+    </header>
+    <p class="panel-sub">Roles and tags are enforced by Firestore rules, not just this screen.</p>
+    <div id="mod-user-list" class="mod-user-list">
+      <!-- populated by js -->
+    </div>
+  </div>
+</div>
+
+<!-- ================= GAME (Tic-Tac-Toe) ================= -->
+<div id="screen-game" class="screen mod-screen" hidden>
+  <div class="mod-card game-card">
+    <header class="mod-header">
+      <h2>Tic-Tac-Toe</h2>
+      <button id="btn-close-game" class="icon-btn" title="Close">✕</button>
+    </header>
+    <p class="panel-sub" id="game-status">—</p>
+    <div id="game-board" class="game-board"></div>
+    <button id="btn-game-restart" class="btn-ghost" style="margin-top:14px;">Restart</button>
+  </div>
+</div>
+
+<!-- ================= BANNED ================= -->
+<section id="screen-banned" class="screen banned-screen" hidden>
+  <div class="banned-card">
+    <div class="wordmark">vox</div>
+    <p class="banned-msg">This account has been suspended.</p>
+    <button id="btn-banned-logout" class="btn-ghost">Log out</button>
+  </div>
+</section>
+
+<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/app.js"></script>
+<script type="module" src="js/auth.js"></script>
+<script type="module" src="js/chat.js"></script>
+<script type="module" src="js/call.js"></script>
+<script type="module" src="js/mod.js"></script>
+<script type="module" src="js/notifications.js"></script>
+<script type="module" src="js/toast.js"></script>
+<script type="module" src="js/ringtone.js"></script>
+<script type="module" src="js/game.js"></script>
+</body>
+</html>
